@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { NewsletterPopup } from '@/components/newsletter-popup';
+import { WhatsAppFloat } from '@/components/whatsapp-float';
 
 const siteUrl = 'https://webarastudio.com';
 
@@ -102,6 +103,7 @@ export default function MarketingLayout({
     <>
       <StructuredData />
       {children}
+      <WhatsAppFloat />
       <NewsletterPopup />
     </>
   );
