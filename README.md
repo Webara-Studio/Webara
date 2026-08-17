@@ -65,6 +65,15 @@ npm run typecheck   # Project-wide type checking
 - When editing UI heavy dialogs/tables, prefer shadcn/ui primitives; responsive behavior is handled with Tailwind utility classes.
 - The project currently uses the Supabase service role key for server routes—keep it on the server only.
 
+## Visual assets
+
+The marketing homepage uses two restrained, decorative background clips in `public/video/`:
+
+- `webara-city-overhead.mp4` – urban overhead motion behind the hero.
+- `webara-mountain-ascent.mp4` – mountain ascent motion behind the quote/contact section.
+
+These clips are muted, looped, hidden on small screens, and disabled for visitors who prefer reduced motion. They are used as atmospheric b-roll only; all important messaging remains in HTML. The source clips were previously downloaded from Coverr for Webara-related work and are retained locally with the video assets.
+
 ## Deployment
 - `apphosting.yaml` contains Firebase App Hosting defaults, but any platform that can run `npm run build && npm run start` will work.
 - Make sure environment variables (Supabase, Gemini) are available in the hosting platform.

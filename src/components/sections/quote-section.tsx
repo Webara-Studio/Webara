@@ -203,8 +203,23 @@ export function QuoteSection({ defaultValues, canPropose = false }: QuoteSection
   return (
     <>
       <audio ref={audioRef} className="hidden" />
-      <section id="contact" className="w-full py-20 md:py-28 lg:py-32 bg-card">
-        <div className="container mx-auto max-w-7xl px-4 md:px-6">
+      <section id="contact" className="relative isolate w-full overflow-hidden py-20 md:py-28 lg:py-32 bg-card">
+        <video
+          className="broll-video pointer-events-none absolute inset-0 hidden h-full w-full object-cover opacity-25 md:block"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+        >
+          <source src="/video/webara-mountain-ascent.mp4" type="video/mp4" />
+        </video>
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-card/95 via-card/90 to-card"
+          aria-hidden="true"
+        />
+        <div className="relative z-10 container mx-auto max-w-7xl px-4 md:px-6">
           <Card className="mx-auto max-w-3xl">
             <CardHeader className="text-center">
               <CardTitle className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
