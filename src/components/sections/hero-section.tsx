@@ -20,7 +20,7 @@ export function HeroSection() {
   return (
     <section className="relative isolate w-full overflow-hidden rounded-[2rem] py-24 md:py-32 lg:py-40">
       <video
-        className="broll-video pointer-events-none absolute inset-0 hidden h-full w-full object-cover md:block"
+        className="broll-video pointer-events-none absolute inset-0 block h-full w-full object-cover"
         autoPlay
         muted
         loop

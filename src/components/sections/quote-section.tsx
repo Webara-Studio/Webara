@@ -205,7 +205,7 @@ export function QuoteSection({ defaultValues, canPropose = false }: QuoteSection
       <audio ref={audioRef} className="hidden" />
       <section id="contact" className="relative isolate w-full overflow-hidden py-20 md:py-28 lg:py-32 bg-card">
         <video
-          className="broll-video pointer-events-none absolute inset-0 hidden h-full w-full object-cover opacity-25 md:block"
+          className="broll-video pointer-events-none absolute inset-0 block h-full w-full object-cover opacity-25"
           autoPlay
           muted
           loop
