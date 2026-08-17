@@ -8,14 +8,24 @@ ALTER TABLE public.quotes DROP CONSTRAINT IF EXISTS quotes_user_id_fkey;
 
 -- Update user_id columns to store Clerk user ID as text
 -- Remove default values that reference Supabase auth
-ALTER TABLE public.profiles ALTER COLUMN user_id DROP DEFAULT IF EXISTS;
-ALTER TABLE public.businesses ALTER COLUMN owner_id DROP DEFAULT IF EXISTS;
-ALTER TABLE public.quotes ALTER COLUMN user_id DROP DEFAULT IF EXISTS;
+ALTER TABLE public.profiles ALTER COLUMN user_id DROP DEFAULT;
+ALTER TABLE public.businesses ALTER COLUMN owner_id DROP DEFAULT;
+ALTER TABLE public.quotes ALTER COLUMN user_id DROP DEFAULT;
 
--- Add NOT NULL constraints since we'll manage this in application logic
-ALTER TABLE public.profiles ADD CONSTRAINT IF NOT EXISTS profiles_user_id_not_null CHECK (user_id IS NOT NULL);
-ALTER TABLE public.businesses ADD CONSTRAINT IF NOT EXISTS businesses_owner_id_not_null CHECK (owner_id IS NOT NULL);
-ALTER TABLE public.quotes ADD CONSTRAINT IF NOT EXISTS quotes_user_id_not_null CHECK (user_id IS NOT NULL);
+-- Add NOT NULL checks without relying on unsupported `ADD CONSTRAINT IF NOT EXISTS`.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_user_id_not_null') THEN
+    ALTER TABLE public.profiles ADD CONSTRAINT profiles_user_id_not_null CHECK (user_id IS NOT NULL);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'businesses_owner_id_not_null') THEN
+    ALTER TABLE public.businesses ADD CONSTRAINT businesses_owner_id_not_null CHECK (owner_id IS NOT NULL);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'quotes_user_id_not_null') THEN
+    ALTER TABLE public.quotes ADD CONSTRAINT quotes_user_id_not_null CHECK (user_id IS NOT NULL);
+  END IF;
+END;
+$$;
 
 -- Add comments to document the change
 COMMENT ON COLUMN public.profiles.user_id IS 'Clerk user ID from JWT sub claim';

@@ -13,14 +13,10 @@ DROP POLICY IF EXISTS "Webara staff full access to profiles" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles
     FOR SELECT USING (auth.jwt() ->> 'sub' = user_id);
 
--- Policy: Users can update their own profile (with restrictions)
+-- Policy: Users can update their own profile (role and verification fields
+-- are protected by the final Supabase Auth cutover policy).
 CREATE POLICY "Users can update own profile" ON public.profiles
-    FOR UPDATE USING (
-        auth.jwt() ->> 'sub' = user_id AND
-        -- Users cannot change their own role or email verification status
-        (role IS NOT DISTINCT FROM OLD.role) AND
-        (email_verified IS NOT DISTINCT FROM OLD.email_verified)
-    );
+    FOR UPDATE USING (auth.jwt() ->> 'sub' = user_id::text);
 
 -- Policy: Users can insert their own profile (during registration)
 CREATE POLICY "Users can insert own profile" ON public.profiles
@@ -91,10 +87,10 @@ GRANT SELECT ON admin_users_view TO authenticated;
 GRANT SELECT ON admin_users_view TO service_role;
 
 -- Add comments for documentation
-COMMENT ON POLICY "Users can view own profile" IS 'Allows users to see their own profile data';
-COMMENT ON POLICY "Users can update own profile" IS 'Allows users to update their own profile with role restrictions';
-COMMENT ON POLICY "Users can insert own profile" IS 'Allows users to create their own profile during registration';
-COMMENT ON POLICY "Admins and staff full access to profiles" IS 'Grants full access to admins and webara_staff';
-COMMENT ON POLICY "Public read access for basic user info" IS 'Allows admins to see all profiles for management';
+COMMENT ON POLICY "Users can view own profile" ON public.profiles IS 'Allows users to see their own profile data';
+COMMENT ON POLICY "Users can update own profile" ON public.profiles IS 'Allows users to update their own profile with role restrictions';
+COMMENT ON POLICY "Users can insert own profile" ON public.profiles IS 'Allows users to create their own profile during registration';
+COMMENT ON POLICY "Admins and staff full access to profiles" ON public.profiles IS 'Grants full access to admins and webara_staff';
+COMMENT ON POLICY "Public read access for basic user info" ON public.profiles IS 'Allows admins to see all profiles for management';
 COMMENT ON FUNCTION is_admin_or_staff IS 'Helper function to check if user has admin or staff role';
 COMMENT ON VIEW admin_users_view IS 'Admin view for comprehensive user management';

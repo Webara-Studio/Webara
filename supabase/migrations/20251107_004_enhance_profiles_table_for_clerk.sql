@@ -3,6 +3,7 @@
 
 -- Add email-related fields
 ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS clerk_user_id TEXT,
 ADD COLUMN IF NOT EXISTS email TEXT,
 ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE;
 
@@ -23,10 +24,29 @@ ADD COLUMN IF NOT EXISTS public_metadata JSONB DEFAULT '{}',
 ADD COLUMN IF NOT EXISTS private_metadata JSONB DEFAULT '{}',
 ADD COLUMN IF NOT EXISTS unsafe_metadata JSONB DEFAULT '{}';
 
--- Add constraints for data integrity
-ALTER TABLE public.profiles 
-ADD CONSTRAINT IF NOT EXISTS profiles_email_not_null CHECK (email IS NOT NULL),
-ADD CONSTRAINT IF NOT EXISTS profiles_email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+-- Backfill the new Auth-facing fields before enforcing email constraints.
+UPDATE public.profiles p
+SET
+    email = u.email,
+    email_verified = (u.email_confirmed_at IS NOT NULL),
+    clerk_created_at = COALESCE(p.clerk_created_at, u.created_at),
+    clerk_last_sign_in_at = COALESCE(p.clerk_last_sign_in_at, u.last_sign_in_at)
+FROM auth.users u
+WHERE u.id::text = p.user_id::text
+  AND p.email IS NULL;
+
+-- Add constraints for data integrity without relying on unsupported
+-- `ADD CONSTRAINT IF NOT EXISTS` syntax.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_email_not_null') THEN
+    ALTER TABLE public.profiles ADD CONSTRAINT profiles_email_not_null CHECK (email IS NOT NULL);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_email_format') THEN
+    ALTER TABLE public.profiles ADD CONSTRAINT profiles_email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+  END IF;
+END;
+$$;
 
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS profiles_email_idx ON public.profiles(email);
