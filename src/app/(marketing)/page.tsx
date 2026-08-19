@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { HeroSection } from '@/components/sections/hero-section';
 import { HowItWorksSection } from '@/components/sections/how-it-works-section';
 import { PortfolioSection } from '@/components/sections/portfolio-section';
+import { AppsSection } from '@/components/sections/apps-section';
 import { AboutSection } from '@/components/sections/about-section';
 import { ResearchSection } from '@/components/sections/research-section';
 import { Footer } from '@/components/layout/footer';
@@ -89,6 +90,9 @@ export default function Home() {
           </section>
           <section className="section-px" id="portfolio">
             <PortfolioSection />
+          </section>
+          <section className="section-px">
+            <AppsSection />
           </section>
           <section className="section-px">
             <AboutSection />
