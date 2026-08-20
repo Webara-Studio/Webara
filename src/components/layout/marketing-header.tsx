@@ -77,8 +77,21 @@ export function MarketingHeader() {
               {link.label}
             </Link>
           ))}
+          <a
+            href="https://links.webarastudio.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative text-sm font-medium text-foreground/70 transition-colors hover:text-foreground after:content-[''] after:absolute after:left-1/2 after:bottom-[-2px] after:h-[1.5px] after:w-0 after:bg-primary after:transition-all after:duration-300 after:-translate-x-1/2 hover:after:w-full"
+          >
+            Our Links
+          </a>
         </nav>
         <div className="hidden md:flex items-center gap-3">
+          <Button asChild size="sm" variant="ghost">
+            <a href="https://list.webarastudio.com" target="_blank" rel="noopener noreferrer">
+              Join the List
+            </a>
+          </Button>
           <Button asChild size="sm" variant="outline">
             <Link href="/login">Login</Link>
           </Button>
@@ -113,8 +126,22 @@ export function MarketingHeader() {
                       {link.label}
                     </Link>
                   ))}
+                  <a
+                    href="https://links.webarastudio.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsOpen(false)}
+                    className="text-lg font-medium text-foreground/80 transition-colors hover:text-foreground"
+                  >
+                    Our Links
+                  </a>
                 </nav>
                 <div className="flex flex-col gap-2 pt-4 border-t">
+                  <Button asChild variant="secondary" className="w-full" onClick={() => setIsOpen(false)}>
+                    <a href="https://list.webarastudio.com" target="_blank" rel="noopener noreferrer">
+                      Join the Mailing List
+                    </a>
+                  </Button>
                   <Button asChild className="w-full" onClick={() => setIsOpen(false)}>
                     <Link href="/login">Login</Link>
                   </Button>

@@ -1,7 +1,8 @@
-// Basic PWA service worker for Webara Admin.
-// Caches static assets and falls back to network-first for dynamic content.
+// Basic PWA service worker for Webara.
+// Keep documents, Next.js output and live API responses aligned with the
+// current deployment. Static assets may use the cache as an offline fallback.
 
-const CACHE_NAME = 'webara-admin-cache-v1';
+const CACHE_NAME = 'webara-cache-v2';
 const PRECACHE_ASSETS = [
   '/',
   '/favicon/site.webmanifest',
@@ -42,6 +43,21 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
 
   if (request.method !== 'GET' || request.url.startsWith('chrome-extension')) {
+    return;
+  }
+
+  const url = new URL(request.url);
+  const isDocument = request.mode === 'navigate' || request.destination === 'document';
+  const isNextAsset = url.pathname.startsWith('/_next/');
+  const isApiRequest = url.pathname.startsWith('/api/');
+
+  // Never serve stale HTML, Next.js chunks or live API data after a deploy.
+  // A stale app shell can reference a different build and cause a client-side
+  // exception before React has a chance to render the page.
+  if (isDocument || isNextAsset || isApiRequest) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' }).catch(() => caches.match(request))
+    );
     return;
   }
 

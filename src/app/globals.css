@@ -133,4 +133,14 @@
   .carousel-nav-button {
       @apply bg-background/50 border-border text-foreground/50 hover:bg-background hover:text-foreground hover:border-primary;
   }
+
+  .broll-video {
+    filter: saturate(0.75) contrast(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .broll-video {
+    display: none;
+  }
 }

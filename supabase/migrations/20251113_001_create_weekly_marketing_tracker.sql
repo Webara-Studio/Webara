@@ -19,7 +19,7 @@ as $$
       exists (
         select 1
         from public.profiles p
-        where p.clerk_user_id = auth.uid()
+        where p.clerk_user_id = auth.uid()::text
           and p.role in ('admin', 'webara_staff')
       ),
       false

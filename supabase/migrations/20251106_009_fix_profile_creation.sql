@@ -6,21 +6,21 @@ UPDATE public.profiles
 SET role = CASE 
     WHEN EXISTS (
         SELECT 1 FROM auth.users 
-        WHERE auth.users.id = profiles.user_id 
+        WHERE auth.users.id::text = profiles.user_id::text
         AND auth.users.raw_user_meta_data->>'role' IN ('admin', 'webara_staff')
     ) THEN auth.users.raw_user_meta_data->>'role'
     ELSE 'user'
 END
 FROM auth.users
-WHERE auth.users.id = profiles.user_id;
+WHERE auth.users.id::text = profiles.user_id::text;
 
 -- Create profiles for any users that don't have one
 INSERT INTO public.profiles (user_id, full_name, role)
-SELECT 
+SELECT
     auth.users.id,
     COALESCE(auth.users.raw_user_meta_data->>'full_name', split_part(auth.users.email, '@', 1)),
-    CASE 
-        WHEN auth.users.raw_user_meta_data->>'role' IN ('admin', 'webara_staff') 
+    CASE
+        WHEN auth.users.raw_user_meta_data->>'role' IN ('admin', 'webara_staff')
         THEN auth.users.raw_user_meta_data->>'role'
         ELSE 'user'
     END

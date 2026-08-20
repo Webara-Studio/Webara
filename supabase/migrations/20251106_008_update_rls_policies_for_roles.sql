@@ -62,48 +62,36 @@ CREATE POLICY "Webara staff full access to quotes" ON public.quotes
         )
     );
 
--- Grant admins and staff access to other tables
-CREATE POLICY "Admins full access to quote_activities" ON public.quote_activities
-    FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles p 
-            WHERE p.user_id = auth.uid() 
-            AND p.role IN ('admin', 'webara_staff')
-        )
-    );
-
-CREATE POLICY "Admins full access to projects" ON public.projects
-    FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles p 
-            WHERE p.user_id = auth.uid() 
-            AND p.role IN ('admin', 'webara_staff')
-        )
-    );
-
-CREATE POLICY "Admins full access to project_milestones" ON public.project_milestones
-    FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles p 
-            WHERE p.user_id = auth.uid() 
-            AND p.role IN ('admin', 'webara_staff')
-        )
-    );
-
-CREATE POLICY "Admins full access to project_documents" ON public.project_documents
-    FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles p 
-            WHERE p.user_id = auth.uid() 
-            AND p.role IN ('admin', 'webara_staff')
-        )
-    );
-
-CREATE POLICY "Admins full access to audit_logs" ON public.audit_logs
-    FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles p 
-            WHERE p.user_id = auth.uid() 
-            AND p.role IN ('admin', 'webara_staff')
-        )
-    );
+-- Grant admins and staff access to optional supporting tables when present.
+-- These tables are not required by every Webara deployment, so keep the
+-- migration additive and avoid failing a deployment that does not use them.
+DO $$
+DECLARE
+    table_name text;
+    policy_name text;
+BEGIN
+    FOREACH table_name IN ARRAY ARRAY[
+        'quote_activities',
+        'projects',
+        'project_milestones',
+        'project_documents',
+        'audit_logs'
+    ] LOOP
+        IF to_regclass(format('public.%I', table_name)) IS NOT NULL THEN
+            policy_name := CASE table_name
+                WHEN 'quote_activities' THEN 'Admins full access to quote_activities'
+                WHEN 'projects' THEN 'Admins full access to projects'
+                WHEN 'project_milestones' THEN 'Admins full access to project_milestones'
+                WHEN 'project_documents' THEN 'Admins full access to project_documents'
+                ELSE 'Admins full access to audit_logs'
+            END;
+            EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', policy_name, table_name);
+            EXECUTE format(
+                'CREATE POLICY %I ON public.%I FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles p WHERE p.user_id = auth.uid() AND p.role IN (''admin'', ''webara_staff'')))',
+                policy_name,
+                table_name
+            );
+        END IF;
+    END LOOP;
+END;
+$$;

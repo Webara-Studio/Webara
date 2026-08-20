@@ -18,16 +18,16 @@ DROP POLICY IF EXISTS "Webara staff full access to quotes" ON public.quotes;
 
 -- New policies using Clerk JWT
 CREATE POLICY "Users can view own profile" ON public.profiles
-    FOR SELECT USING (auth.jwt() ->> 'sub' = user_id);
+    FOR SELECT USING (auth.jwt() ->> 'sub' = user_id::text);
 
 CREATE POLICY "Users can update own profile" ON public.profiles
-    FOR UPDATE USING (auth.jwt() ->> 'sub' = user_id);
+    FOR UPDATE USING (auth.jwt() ->> 'sub' = user_id::text);
 
 CREATE POLICY "Users can insert own profile" ON public.profiles
-    FOR INSERT WITH CHECK (auth.jwt() ->> 'sub' = user_id);
+    FOR INSERT WITH CHECK (auth.jwt() ->> 'sub' = user_id::text);
 
 CREATE POLICY "Business owners full access" ON public.businesses
-    FOR ALL USING (auth.jwt() ->> 'sub' = owner_id);
+    FOR ALL USING (auth.jwt() ->> 'sub' = owner_id::text);
 
 CREATE POLICY "Quote owners full access" ON public.quotes
-    FOR ALL USING (auth.jwt() ->> 'sub' = user_id);
+    FOR ALL USING (auth.jwt() ->> 'sub' = user_id::text);

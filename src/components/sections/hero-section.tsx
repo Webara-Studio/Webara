@@ -18,8 +18,23 @@ export function HeroSection() {
   };
 
   return (
-    <section className="w-full py-24 md:py-32 lg:py-40">
-      <div className="container grid gap-10 lg:grid-cols-2 lg:gap-16">
+    <section className="relative isolate w-full overflow-hidden rounded-[2rem] py-24 md:py-32 lg:py-40">
+      <video
+        className="broll-video pointer-events-none absolute inset-0 block h-full w-full object-cover"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+      >
+        <source src="/video/webara-city-overhead.mp4" type="video/mp4" />
+      </video>
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70"
+        aria-hidden="true"
+      />
+      <div className="relative z-10 container grid gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="flex flex-col items-center justify-center space-y-6 text-center lg:items-start lg:text-left">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline">
             <TypingAnimation
